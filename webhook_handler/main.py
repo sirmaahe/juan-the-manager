@@ -6,5 +6,3 @@ async def process_message(request):
 
 app = web.Application()
 app.router.add_get('/', process_message)
-
-web.run_app(app)

@@ -1,1 +1,1 @@
-web: python webhook_handler/main.py --log-file -
+web: gunicorn webhook_handler:app --bind 0.0.0.0 --worker-class aiohttp.GunicornWebWorker
