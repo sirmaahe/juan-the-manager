@@ -1,1 +1,1 @@
-web: gunicorn webhook_handler:app --bind 0.0.0.0 --worker-class aiohttp.GunicornWebWorker
+web: gunicorn web:main --config config/gunicorn.conf
