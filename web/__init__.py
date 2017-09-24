@@ -4,7 +4,7 @@ from sanic.response import json
 app = Sanic()
 
 
-@app.route("/", "POST")
-async def test(request):
+@app.route("/", ["POST"])
+async def telegram_hook(request):
     print(request.json)
     return json({"hello": "world"})
