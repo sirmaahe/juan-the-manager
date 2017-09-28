@@ -20,5 +20,6 @@ if db_url:
 else:
     DB_SETTINGS = {
         'provider': 'sqlite',
-        'filename': '../database.sqlite'
+        'filename': '../database.sqlite',
+        'create_db': True
     }

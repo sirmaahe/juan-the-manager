@@ -5,7 +5,7 @@ from pony.orm import db_session
 from .settings import *
 from .models import db, User, Note
 
-db.bind(**DB_SETTINGS, create_db=True)
+db.bind(**DB_SETTINGS)
 db.generate_mapping(create_tables=True)
 
 app = Sanic()
