@@ -12,10 +12,10 @@ if db_url:
 
     DB_SETTINGS = {
         'provider': 'postgres',
-        'username': result.username,
+        'user': result.username,
         'password': result.password,
         'database': result.path[1:],
-        'hostname': result.hostname,
+        'host': result.hostname,
     }
 else:
     DB_SETTINGS = {
