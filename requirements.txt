@@ -1,3 +1,4 @@
 sanic==0.6.0
 gunicorn==19.6.0
 pony==0.7.2
+psycopg2==2.7.3.1
