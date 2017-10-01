@@ -49,7 +49,8 @@ async def telegram_hook(request):
     with db_session:
         user = User.get(username=username)
         if not user:
-            user = User(username=username, password=message['text'][:20])
+            password = User.get_password(message['text'][:20])
+            user = User(username=username, password=password)
 
         Note(text=message['text'], user=user)
 
