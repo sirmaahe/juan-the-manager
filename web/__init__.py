@@ -60,6 +60,8 @@ async def telegram_hook(request):
 @app.route("/notes", ["GET"])
 async def notes(request):
     payload = request.app.auth.extract_payload(request)
+    if not payload:
+        return json([])
     with db_session:
         response = [note.text for note in Note.select(lambda p: p.user.id == payload['user_id'])]
     return json(response)

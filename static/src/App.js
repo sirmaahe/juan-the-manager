@@ -20,7 +20,7 @@ class App extends Component {
     render() {
         return (
             <div className="App">
-                { this.state.access_token? <NotesContainer/>: <LoginContainer setToken={ () => this.setToken }/>}
+                { this.state.access_token? <NotesContainer/>: <LoginContainer setToken={ (token) => this.setToken(token) }/>}
             </div>
         );
     }
