@@ -23,3 +23,7 @@ else:
         'filename': '../database.sqlite',
         'create_db': True
     }
+
+APP_SETTINGS = {
+    'SANIC_JWT_USER_ID': 'id'
+}
