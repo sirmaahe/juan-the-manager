@@ -1,9 +1,13 @@
+from random import randint
+
 from sanic import Sanic
 from sanic.response import json
+
 from pony.orm import db_session
 from sanic_jwt import initialize, exceptions
 
 from .settings import *
+from .utils import send_tg_message
 from .models import db, User, Note
 
 db.bind(**DB_SETTINGS)
@@ -49,8 +53,9 @@ async def telegram_hook(request):
     with db_session:
         user = User.get(username=username)
         if not user:
-            password = User.get_password(message['text'][:20])
+            password = ''.join((chr(randint(33, 126)) for _ in range(16)))
             user = User(username=username, password=password)
+            await send_tg_message(username, f'Your password: {password}')
 
         Note(text=message['text'], user=user)
 

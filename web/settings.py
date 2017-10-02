@@ -27,3 +27,5 @@ else:
 APP_SETTINGS = {
     'SANIC_JWT_USER_ID': 'id'
 }
+
+tg_bot_key = os.environ.get('TELEGRAM_BOT_KEY')
