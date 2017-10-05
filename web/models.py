@@ -7,6 +7,7 @@ db = orm.Database()
 class User(db.Entity):
     username = orm.Required(str)
     password = orm.Required(str)
+    tg_chat = orm.Optional(int)
     notes = orm.Set('Note')
 
     @classmethod

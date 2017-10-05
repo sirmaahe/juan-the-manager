@@ -1,13 +1,13 @@
-import grequests
+import requests
 
-from .settings import tg_bot_key
+from .settings import TELEGRAM_BOT_KEY
 
 
-async def send_tg_message(username, message):
-    return grequests.post(
-        f'https://api.telegram.org/bot{tg_bot_key}/sendMessage',
+def send_tg_message(chat_id, message):
+    requests.post(
+        f'https://api.telegram.org/bot{TELEGRAM_BOT_KEY}/sendMessage',
         json={
-            "chat_id": username,
+            "chat_id": chat_id,
             "text": message
         }
     )
