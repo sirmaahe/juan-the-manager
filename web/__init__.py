@@ -56,7 +56,7 @@ async def telegram_hook(request):
             chat_id = message['chat']['id']
             password = ''.join((chr(randint(33, 126)) for _ in range(16)))
             user = User(username=username, password=User.get_password(password), tg_chat=chat_id)
-            send_tg_message(chat_id, f'Your password: {password}')
+            await send_tg_message(chat_id, f'Your password: {password}')
 
         Note(text=message['text'], user=user)
 

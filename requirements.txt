@@ -5,3 +5,4 @@ psycopg2==2.7.3.1
 sanic-jwt==0.2.1
 passlib==1.7.1
 requests==2.18.4
+aiohttp==2.2.5
