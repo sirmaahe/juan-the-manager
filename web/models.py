@@ -30,6 +30,4 @@ class Category(db.Entity):
 class Note(db.Entity):
     text = orm.Required(str)
     user = orm.Required(User)
-    category = orm.Required(Category)
-
-
+    category = orm.Optional(Category)

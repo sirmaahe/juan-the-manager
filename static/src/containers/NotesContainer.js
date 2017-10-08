@@ -1,11 +1,14 @@
 import React, {Component} from 'react';
 import Note from '../components/Note'
+import Category from '../components/Category'
+import _ from 'lodash'
 
 export default class NotesContainer extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            notes: []
+            notes: {'NoName': []},
+            activeCategory: 'NoName'
         };
 
         const token = window.localStorage.accessToken;
@@ -18,7 +21,21 @@ export default class NotesContainer extends Component {
         }).then(response => {
             return response.json()
         }).then(data => {
-            this.setState({notes: data})
+            let newNotes = {}
+
+            _.forEach(data, (e) => {
+                const category = e.category || 'NoName'
+
+                if (!newNotes[category]) {
+                    newNotes[category] = []
+                }
+
+                newNotes[category].push(e)
+            })
+
+            if (newNotes) {
+                this.setState({notes: newNotes})
+            }
         })
     }
 
@@ -35,17 +52,25 @@ export default class NotesContainer extends Component {
             if ( response.status === 204) {
                 let notes = this.state.notes
                 notes.pop(note)
-                this.setState({notes: notes})
+                this.setState({ notes: notes })
             }
         })
     }
 
+    changeCategory(name) {
+        this.setState({ activeCategory: name })
+    }
+
     render() {
         return (
-            <div className="App">
-                {this.state.notes.map((x, i) => {
+            <div>
+                <div>{ Object.keys(this.state.notes).map((x, i) => {
+                    return <Category key={i} name={x} onClick={ () => {this.changeCategory(x)} }/>
+                } ) }</div>
+
+                { this.state.notes[this.state.activeCategory].map( (x, i) => {
                     return <Note key={i} note={x} delete={this.deleteNote}/>
-                })}
+                } ) }
             </div>
         );
     }

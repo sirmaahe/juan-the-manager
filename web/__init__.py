@@ -51,7 +51,8 @@ notes_namespace = api.namespace('notes')
 
 note_model = api.model('Note', {
     'id': fields.Integer(readOnly=True, description='id'),
-    'text': fields.String(required=True, description='text')
+    'text': fields.String(required=True, description='text'),
+    'category': fields.String(),
 })
 
 
@@ -67,6 +68,7 @@ async def telegram_hook(request):
             password = ''.join((chr(randint(33, 126)) for _ in range(16)))
             user = User(username=username, password=User.get_password(password), tg_chat=chat_id)
             await send_tg_message(chat_id, f'Your password: {password}')
+
 
         Note(text=message['text'], user=user)
 
@@ -94,5 +96,4 @@ class NotesList(Resource):
         return HTTPResponse(status=204)
 
 
-# api.router.add(, NotesList)
 app.router.add("/hooks/telegram/{}".format(TELEGRAM_SECRET_TOKEN), ["POST"], telegram_hook)
