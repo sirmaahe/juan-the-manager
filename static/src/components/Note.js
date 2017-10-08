@@ -5,7 +5,7 @@ export default class Note extends Component {
     return (
       <div>
         <p>
-            { this.props.note }
+            { this.props.note.text } <span onClick={ () => { this.props.delete( this.props.note ) } }>удалить</span>
         </p>
       </div>
     );

@@ -29,3 +29,8 @@ APP_SETTINGS = {
 }
 
 TELEGRAM_BOT_KEY = os.environ.get('TELEGRAM_BOT_KEY')
+
+try:
+    from .local_settings import *
+except ImportError:
+    pass

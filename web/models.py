@@ -22,6 +22,14 @@ class User(db.Entity):
         return pbkdf2_sha256.verify(password, self.password)
 
 
+class Category(db.Entity):
+    name = orm.Required(str)
+    notes = orm.Set('Note')
+
+
 class Note(db.Entity):
     text = orm.Required(str)
     user = orm.Required(User)
+    category = orm.Required(Category)
+
+

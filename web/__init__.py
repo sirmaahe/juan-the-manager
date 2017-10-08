@@ -1,10 +1,11 @@
 from random import randint
 
 from sanic import Sanic
-from sanic.response import json
+from sanic.response import json, HTTPResponse
 
 from pony.orm import db_session
 from sanic_jwt import initialize, exceptions
+from sanic_restplus import fields, Api, Resource
 
 from .settings import *
 from .utils import send_tg_message
@@ -44,7 +45,16 @@ app.static('/static', './static/build/static/')
 app.static('/html', './static/build/')
 
 
-@app.route("/hooks/telegram/{}".format(TELEGRAM_SECRET_TOKEN), ["POST"])
+api = Api(app)
+
+notes_namespace = api.namespace('notes')
+
+note_model = api.model('Note', {
+    'id': fields.Integer(readOnly=True, description='id'),
+    'text': fields.String(required=True, description='text')
+})
+
+
 async def telegram_hook(request):
     data = request.json
     message = data['message']
@@ -63,12 +73,26 @@ async def telegram_hook(request):
     return json({})
 
 
-@app.route("/notes", ["GET"])
-async def notes(request):
-    payload = request.app.auth.extract_payload(request)
-    if not payload:
-        return json([])
-    with db_session:
-        response = [note.text for note in Note.select(lambda p: p.user.id == payload['user_id'])]
-    return json(response)
+@notes_namespace.route("/")
+class NotesList(Resource):
+    @api.marshal_with(note_model)
+    async def get(self, request):
+        payload = request.app.auth.extract_payload(request)
+        if not payload:
+            return []
+        with db_session:
+            response = [note for note in Note.select(lambda p: p.user.id == payload['user_id'])]
+        return response
 
+
+@notes_namespace.route("/<id:int>/")
+class NotesList(Resource):
+    async def delete(self, request, id):
+        payload = request.app.auth.extract_payload(request)
+        with db_session:
+            Note.select(lambda n: n.user.id == payload['user_id'] and n.id == id).delete(bulk=True)
+        return HTTPResponse(status=204)
+
+
+# api.router.add(, NotesList)
+app.router.add("/hooks/telegram/{}".format(TELEGRAM_SECRET_TOKEN), ["POST"], telegram_hook)
