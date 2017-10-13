@@ -33,7 +33,7 @@ export default class NotesContainer extends Component {
                 newNotes[category].push(e)
             })
 
-            if (_.isEmpty(newNotes)) {
+            if (!_.isEmpty(newNotes)) {
                 this.setState({notes: newNotes})
             }
         })
