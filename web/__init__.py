@@ -9,7 +9,7 @@ from sanic_restplus import fields, Api, Resource
 
 from .settings import *
 from .utils import send_tg_message
-from .models import db, User, Note
+from .models import db, User, Note, Category
 
 db.bind(**DB_SETTINGS)
 db.generate_mapping(create_tables=True)
@@ -55,6 +55,11 @@ note_model = api.model('Note', {
     'category': fields.String(),
 })
 
+category_model = api.model('Category', {
+    'id': fields.Integer(readOnly=True, description='id'),
+    'name': fields.String(required=True, description='name'),
+})
+
 
 async def telegram_hook(request):
     data = request.json
@@ -68,7 +73,6 @@ async def telegram_hook(request):
             password = ''.join((chr(randint(33, 126)) for _ in range(16)))
             user = User(username=username, password=User.get_password(password), tg_chat=chat_id)
             await send_tg_message(chat_id, f'Your password: {password}')
-
 
         Note(text=message['text'], user=user)
 
@@ -94,6 +98,24 @@ class NotesList(Resource):
         with db_session:
             Note.select(lambda n: n.user.id == payload['user_id'] and n.id == id).delete(bulk=True)
         return HTTPResponse(status=204)
+
+
+@notes_namespace.route("/<id:int>/category/")
+class CategoryDetail(Resource):
+    @api.marshal_with(category_model)
+    async def get(self, request, id):
+        payload = request.app.auth.extract_payload(request)
+        with db_session:
+            category = Note.select(lambda n: n.user.id == payload['user_id'] and n.id == id)[0].category
+        return category
+
+    async def post(self, request, id):
+        payload = request.app.auth.extract_payload(request)
+        name = request.json['name']
+        with db_session:
+            note = Note.select(lambda n: n.user.id == payload['user_id'] and n.id == id)[0]
+            Category(name=name, note=note)
+        return HTTPResponse(status=201)
 
 
 app.router.add("/hooks/telegram/{}".format(TELEGRAM_SECRET_TOKEN), ["POST"], telegram_hook)

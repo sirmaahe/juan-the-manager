@@ -57,6 +57,29 @@ export default class NotesContainer extends Component {
         })
     }
 
+    updateCategory(note, name) {
+        const token = window.localStorage.accessToken;
+
+        fetch(`/notes/${note.id}/category`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json'
+            },
+            data: { category: name }
+        }).then(response => {
+            if ( response.status === 201 ) {
+                let notes = this.state.notes;
+                let newCategory = notes[name] || [];
+
+                notes[note.category].pop(note);
+                newCategory.push(note);
+
+                this.setState({ notes: notes })
+            }
+        })
+    }
+
     changeCategory(name) {
         this.setState({ activeCategory: name })
     }
@@ -69,7 +92,11 @@ export default class NotesContainer extends Component {
                 } ) }</div>
 
                 { this.state.notes[this.state.activeCategory].map( (x, i) => {
-                    return <Note key={i} note={x} delete={this.deleteNote}/>
+                    return <Note
+                        key={i} note={x} delete={this.deleteNote}
+                        category={ this.state.activeCategory }
+                        updateCategory={ this.updateCategory }
+                    />
                 } ) }
             </div>
         );
