@@ -9,8 +9,8 @@ export default class Note extends Component {
                 { this.props.note.text }
                 <span onClick={ () => { this.props.delete( this.props.note ) } }>удалить</span>
                 <CategoryInput
-                    category={ this.props.category }
-                    updateCategory={ (name) => this.props.updateCategory( this.props.note, name )}
+                    category={ this.props.note.category }
+                    updateCategory={ (name) => { this.props.updateCategory( this.props.note, name )}}
                 />
             </p>
           </div>

@@ -13,7 +13,7 @@ export default class NotesContainer extends Component {
 
         const token = window.localStorage.accessToken;
 
-        fetch('/notes', {
+        fetch('/notes/', {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Accept': 'application/json'
@@ -58,18 +58,19 @@ export default class NotesContainer extends Component {
     }
 
     updateCategory(note, name) {
-        const token = window.localStorage.accessToken;
+        const token = window.localStorage.accessToken,
+              self = this;
 
-        fetch(`/notes/${note.id}/category`, {
+        fetch(`/notes/${note.id}/category/`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Accept': 'application/json'
             },
-            data: { category: name }
+            body: JSON.stringify({ name: name })
         }).then(response => {
             if ( response.status === 201 ) {
-                let notes = this.state.notes;
+                let notes = self.state.notes;
                 let newCategory = notes[name] || [];
 
                 notes[note.category].pop(note);
@@ -94,7 +95,6 @@ export default class NotesContainer extends Component {
                 { this.state.notes[this.state.activeCategory].map( (x, i) => {
                     return <Note
                         key={i} note={x} delete={this.deleteNote}
-                        category={ this.state.activeCategory }
                         updateCategory={ this.updateCategory }
                     />
                 } ) }

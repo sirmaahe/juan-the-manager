@@ -48,11 +48,14 @@ app.static('/html', './static/build/')
 api = Api(app)
 
 notes_namespace = api.namespace('notes')
-
+@db_session
+def f(x):
+    b = x.category.name if hasattr(x, 'category') else None
+    return b
 note_model = api.model('Note', {
     'id': fields.Integer(readOnly=True, description='id'),
     'text': fields.String(required=True, description='text'),
-    'category': fields.String(),
+    'category': fields.String(attribute=f),
 })
 
 category_model = api.model('Category', {
@@ -111,10 +114,13 @@ class CategoryDetail(Resource):
 
     async def post(self, request, id):
         payload = request.app.auth.extract_payload(request)
-        name = request.json['name']
+        data = request.json
+        name = data['name']
         with db_session:
-            note = Note.select(lambda n: n.user.id == payload['user_id'] and n.id == id)[0]
-            Category(name=name, note=note)
+            note = list(Note.select(lambda n: n.user.id == payload['user_id'] and n.id == id))[0]
+            category = note.category
+            if not category:
+                Category(name=name, notes=note)
         return HTTPResponse(status=201)
 
 
